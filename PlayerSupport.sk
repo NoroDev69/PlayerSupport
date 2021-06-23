@@ -1,0 +1,40 @@
+# PlayerSupport By NoroDev#0001
+
+options:
+    # Messages
+    Prefix: &8(&9&lSUPPORT&8)&e
+    Permission: &cYou don't have access to that command!
+    CooldownMessage: &cYou need to wait between using /support!
+    # Cooldown, in Seconds
+    Cooldown: 60
+
+command /support [<text>]:
+    aliases: /helpme
+    usage: &cYou need to state your issue! /support (text)
+    trigger:
+        if arg is set:
+            if {supportCooldown.%player's uuid%} is not set:
+                set {supportCooldown.%player's uuid%} to false
+                stop
+            if {supportCooldown.%player's uuid%} is true:
+                send "{@CooldownMessage}"
+                wait {@Cooldown} seconds
+                set {supportCooldown.%player's uuid%} to false
+            else if {supportCooldown.%player's uuid%} is false: 
+                send "{@Prefix} &e%sender% &8» &f%arg-1%" to player
+                send "{@Prefix} &e%sender% &8» &f%arg-1%" to all players where [input has permission "staff.support"]
+                set {supportCooldown.%player's uuid%} to true
+
+command /answer [<player>] [<text>]:
+    usage: &cUsage: /answer (player) (message...)
+    permission: staff.support
+    permission message: {@Permission}
+    trigger:
+        if arg 1 is not set:
+            send "&cUsage: /answer (player) (message...)"
+        if arg 1 is set:
+            if arg 2 is not set:
+                send "&cUsage: /answer (player) (message...)"
+            if arg 2 is set:
+                send "{@Prefix} &e%sender% &8-> &e%arg-1% &8» &f%arg-2%" to all players where [input has permission "staff.support"]
+                send "{@Prefix} &e%sender% &8-> &eYou &8» &f%arg-2%" to arg-1
